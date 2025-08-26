@@ -1,53 +1,463 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SmartQuotesEZ</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SmartQuotez — Smart GC Chicago</title>
+  <meta name="description" content="Instant home project pricing in Chicago. Flooring, stairs, and interior painting with vetted pros managed by our GC team." />
+  <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='black'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='28' fill='white' font-family='Arial,Helvetica,sans-serif'>SQ</text></svg>">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
-      background-color: #f4f4f4;
+    :root{
+      --bg:#f7f8fb; --card:#fff; --ink:#0f172a; --muted:#6b7280; --brand:#111827;
+      --accent:#0ea5e9; --ring:#0ea5e9; --line:#e5e7eb;
+      --radius:16px;
     }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
-    p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      max-width: 600px;
-    }
-    a.button {
-      display: inline-block;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      color: #fff;
-      background-color: #007BFF;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-    a.button:hover {
-      background-color: #0056b3;
-    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue","Noto Sans",Arial,"Apple Color Emoji","Segoe UI Emoji";}
+    a{color:inherit}
+    .wrap{max-width:1100px;margin:auto;padding:24px}
+    header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.75);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--line)}
+    header .inner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 24px;margin:auto;max-width:1100px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .logo{width:34px;height:34px;border-radius:12px;background:#000;color:#fff;display:grid;place-items:center}
+    .btn{appearance:none;border:1px solid var(--ink);background:#111827;color:#fff;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--ink);border-color:#cbd5e1}
+    .btn.block{width:100%}
+    .btn:focus{outline:none;box-shadow:0 0 0 3px rgba(14,165,233,.35)}
+    .grid{display:grid;gap:16px}
+    .two{grid-template-columns:1fr;}.three{grid-template-columns:1fr;}
+    @media(min-width:900px){.two{grid-template-columns:1fr 1fr}.three{grid-template-columns:2fr 1fr 1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+    .hero h1{font-size:clamp(28px,3vw,44px);line-height:1.08;margin:0}
+    .muted{color:var(--muted)}
+    .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted)}
+    label{font-size:14px;color:#334155;margin-bottom:6px;display:block}
+    input,select,textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid #cbd5e1;background:#fff}
+    textarea{min-height:96px;resize:vertical}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{display:flex;align-items:center;gap:8px;border:1px solid var(--line);padding:10px 12px;border-radius:12px;cursor:pointer}
+    .pill.selected{border-color:var(--ring);box-shadow:0 0 0 2px rgba(14,165,233,.25)}
+    .foot{border-top:1px solid var(--line);margin-top:32px;padding:18px 0;color:var(--muted);font-size:13px}
+    .hidden{display:none}
+    .right{display:flex;gap:8px}
+    .adminToggle{position:fixed;right:16px;bottom:16px}
+    .price{font-size:34px;font-weight:800}
+    .list{list-style:disc;padding-left:18px;color:var(--muted)}
+    .kicker{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+    .table{width:100%;border-collapse:separate;border-spacing:0 10px}
+    .table tr{background:#fff}
+    .table td{padding:10px 12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .table tr td:first-child{border-left:1px solid var(--line);border-top-left-radius:12px;border-bottom-left-radius:12px}
+    .table tr td:last-child{border-right:1px solid var(--line);border-top-right-radius:12px;border-bottom-right-radius:12px}
   </style>
 </head>
 <body>
-  <h1>Welcome to SmartQuotesEZ</h1>
-  <p>
-    Get fast, free, and smart construction estimates. Whether you're remodeling,
-    upgrading floors, or planning a full home renovation — we've got you covered.
-  </p>
-  <a href="#" class="button">Get Your Free Quote</a>
-  <p style="margin-top: 2rem; font-size: 0.9rem; color: #555;">
-    SmartQuotesEZ.com | Powered by AI
-  </p>
+  <header>
+    <div class="inner">
+      <div class="brand">
+        <div class="logo">SQ</div>
+        <div>SmartQuotez • Chicago <span class="badge" id="mvp">MVP</span></div>
+      </div>
+      <div class="right">
+        <button class="btn ghost" onclick="toStep('project')">Get Instant Estimate</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- LANDING -->
+    <section id="step-landing" class="grid two">
+      <div class="hero card">
+        <h1>Instant home project pricing — powered by real Chicago data.</h1>
+        <p class="muted" style="margin-top:10px">Stop waiting days for quotes. Get a fast, realistic estimate for flooring, stairs, or interior painting — then we schedule vetted pros and manage the job as your GC.</p>
+        <div class="row" style="margin-top:16px">
+          <button class="btn" onclick="toStep('project')">Get Instant Estimate</button>
+          <button class="btn ghost" onclick="toStep('contact')">Talk to a human</button>
+        </div>
+        <div class="row" style="margin-top:16px;color:var(--muted);font-size:14px">
+          <span class="pill">✓ Vetted contractors</span>
+          <span class="pill">✓ Transparent pricing</span>
+          <span class="pill">✓ GC oversight & warranty</span>
+        </div>
+      </div>
+      <div class="card grid">
+        <div>
+          <div class="kicker">Popular today</div>
+          <div class="grid">
+            <div class="row">
+              <div class="pill" onclick="pickProject('flooring_refinish')">🪵 Hardwood Refinishing</div>
+              <div class="pill" onclick="pickProject('flooring_install')">📏 Install: Hardwood/LVP</div>
+            </div>
+            <div class="row">
+              <div class="pill" onclick="pickProject('painting_interior')">🎨 Interior Painting</div>
+              <div class="pill" onclick="pickProject('stairs_refinish')">🪜 Staircase Refinishing</div>
+            </div>
+          </div>
+        </div>
+        <div class="muted" style="font-size:14px">Same-week scheduling available in: Winnetka, Wilmette, Glencoe, Lake Forest, Hinsdale, Oak Brook, Western Springs, Lincoln Park, Gold Coast, River North.</div>
+      </div>
+    </section>
+
+    <!-- PROJECT -->
+    <section id="step-project" class="card hidden">
+      <h2>What project are you pricing?</h2>
+      <div class="row" style="margin-top:10px">
+        <div class="pill" id="opt-flooring_refinish" onclick="pickProject('flooring_refinish')">🪵 Hardwood Refinishing</div>
+        <div class="pill" id="opt-flooring_install" onclick="pickProject('flooring_install')">📏 Hardwood / LVP Install</div>
+        <div class="pill" id="opt-painting_interior" onclick="pickProject('painting_interior')">🎨 Interior Painting</div>
+        <div class="pill" id="opt-stairs_refinish" onclick="pickProject('stairs_refinish')">🪜 Staircase Refinishing</div>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn ghost" onclick="toStep('landing')">← Back</button>
+        <button class="btn" onclick="toStep('details')">Next →</button>
+      </div>
+    </section>
+
+    <!-- DETAILS -->
+    <section id="step-details" class="grid two hidden">
+      <div class="card grid">
+        <h2>Project details</h2>
+        <div id="sqft-wrapper">
+          <label>Total square feet</label>
+          <input id="sqft" inputmode="decimal" placeholder="e.g., 650" />
+        </div>
+        <div id="steps-wrapper" class="hidden">
+          <label>Number of steps</label>
+          <input id="steps" inputmode="numeric" placeholder="e.g., 13" />
+        </div>
+        <div id="rooms-wrapper">
+          <label>How many rooms?</label>
+          <select id="rooms">
+            <option value="1">1</option><option value="2">2</option><option value="3" selected>3</option>
+            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+          </select>
+        </div>
+        <div>
+          <label>Address (for parking/permit estimate)</label>
+          <input id="address" placeholder="Street, Chicago, IL" />
+        </div>
+        <div>
+          <label>Notes</label>
+          <textarea id="notes" placeholder="Any timing constraints, existing finish, ceiling height, pets, etc."></textarea>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Upload photos (optional)</h3>
+        <p class="muted" style="margin-top:-6px">Room overviews + close-ups of problem areas.</p>
+        <input id="photos" type="file" multiple />
+        <div id="photo-list" class="muted" style="font-size:14px;margin-top:8px"></div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn ghost" onclick="toStep('project')">← Back</button>
+          <button class="btn" onclick="toStep('contact')">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="step-contact" class="grid two hidden">
+      <div class="card grid">
+        <h2>Where can we send your instant estimate?</h2>
+        <div class="grid two">
+          <div>
+            <label>Your name</label>
+            <input id="name" placeholder="Full name" />
+          </div>
+          <div>
+            <label>Email</label>
+            <input id="email" type="email" placeholder="you@email.com" />
+          </div>
+          <div>
+            <label>Phone</label>
+            <input id="phone" placeholder="(312) 555-0199" />
+          </div>
+          <div>
+            <label>Preferred date (optional)</label>
+            <input id="date" type="date" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn ghost" onclick="toStep('details')">← Back</button>
+          <button class="btn" onclick="showEstimate()">Generate Estimate</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="kicker">Estimate range</div>
+        <div class="price" id="range">$— – $—</div>
+        <p class="muted">Includes labor, standard consumables, site protection, and basic patching. Taxes/permits/parking may be extra.</p>
+        <ul class="list">
+          <li>Upgrades (e.g., Bona Traffic HD, premium paints) available</li>
+          <li>Final price confirmed after quick video call or site visit</li>
+          <li>We manage the project and warranty the workmanship</li>
+        </ul>
+        <div class="row" style="margin-top:16px">
+          <button class="btn block" onclick="reserveLead()">Reserve & Request Confirmation</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONFIRM -->
+    <section id="step-confirm" class="grid two hidden">
+      <div class="card">
+        <h2>Thanks! We’re on it.</h2>
+        <p class="muted">You’ll get a text/email shortly with a calendar link to lock final price & start date.</p>
+        <table class="table" style="margin-top:10px">
+          <tr><td>Estimate</td><td id="confirm-est">—</td></tr>
+          <tr><td>Contact</td><td id="confirm-contact">—</td></tr>
+          <tr><td>Address</td><td id="confirm-address">—</td></tr>
+        </table>
+        <div class="row" style="margin-top:16px">
+          <button class="btn" onclick="resetAll(); toStep('landing')">Done</button>
+          <button class="btn ghost" onclick="toStep('details')">Start a new estimate</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>What happens next?</h3>
+        <ol class="list">
+          <li>We review your details & photos</li>
+          <li>Quick verification call or visit (if needed)</li>
+          <li>We schedule vetted pros and manage the job end-to-end</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="step-admin" class="hidden">
+      <div class="card">
+        <h2>Admin — Lead Queue <span class="badge" id="lead-count">0</span></h2>
+        <div id="lead-list" class="grid" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+    <div class="foot">© <span id="year"></span> SmartQuotez — Chicago GC Network • Privacy • Terms</div>
+  </main>
+
+  <button class="btn adminToggle" onclick="toggleAdmin()">Admin</button>
+
+  <script>
+    // ====== CONFIG ======
+    // OPTIONAL: set to a Zapier/Make/Formspree webhook to receive leads server-side
+    const WEBHOOK_URL = ""; // e.g., "https://hooks.zapier.com/hooks/catch/XXXX/XXXX"
+
+    // ====== STATE ======
+    const state = {
+      step: 'landing',
+      projectType: '',
+      sqft: 0,
+      rooms: 3,
+      steps: 0,
+      address: '',
+      notes: '',
+      photos: [],
+      name: '',
+      email: '',
+      phone: '',
+      date: '',
+      estimate: null,
+      admin: false,
+      leadQueue: JSON.parse(localStorage.getItem('sqz_leads') || '[]')
+    };
+
+    const $ = sel => document.querySelector(sel);
+
+    const money = n => n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0});
+    const rates = {
+      flooring_refinish: 5.0,       // $/sqft
+      flooring_install: 8.0,        // $/sqft (solid/engineered/LVP typical)
+      painting_interior: 2.2,       // $/sqft paintable
+      stairs_refinish: 180.0        // $ per step baseline
+    };
+    const pretty = {
+      flooring_refinish: 'Hardwood Refinishing',
+      flooring_install: 'Hardwood / LVP Installation',
+      painting_interior: 'Interior Painting',
+      stairs_refinish: 'Staircase Refinishing'
+    };
+
+    // ====== NAV ======
+    function toStep(next){
+      ['landing','project','details','contact','confirm','admin'].forEach(s => {
+        const sec = document.getElementById('step-'+s);
+        if(sec) sec.classList.add('hidden');
+      });
+      if(next === 'project') $('#step-project').classList.remove('hidden');
+      if(next === 'details') { syncDetailVisibility(); $('#step-details').classList.remove('hidden'); }
+      if(next === 'contact') $('#step-contact').classList.remove('hidden');
+      if(next === 'confirm') $('#step-confirm').classList.remove('hidden');
+      if(next === 'admin') { renderAdmin(); $('#step-admin').classList.remove('hidden'); }
+      if(next === 'landing') $('#step-landing').classList.remove('hidden');
+      state.step = next;
+    }
+
+    function toggleAdmin(){
+      if(state.step === 'admin'){ toStep('landing'); return; }
+      toStep('admin');
+    }
+
+    // ====== PROJECT PICK ======
+    function pickProject(type){
+      state.projectType = type;
+      // UI highlight
+      ['flooring_refinish','flooring_install','painting_interior','stairs_refinish'].forEach(t=>{
+        const el = document.getElementById('opt-'+t);
+        if(el){ el.classList.toggle('selected', t===type); }
+      });
+      if(state.step === 'landing'){ toStep('details'); }
+    }
+
+    // ====== DETAILS INPUTS ======
+    function syncDetailVisibility(){
+      // stairs use steps, others use sqft + rooms
+      const isStairs = state.projectType === 'stairs_refinish';
+      $('#sqft-wrapper').classList.toggle('hidden', isStairs);
+      $('#rooms-wrapper').classList.toggle('hidden', isStairs);
+      $('#steps-wrapper').classList.toggle('hidden', !isStairs);
+    }
+
+    // inputs listeners
+    $('#sqft').addEventListener('input', e => { state.sqft = parseFloat((e.target.value||'').replace(/,/g,''))||0; });
+    $('#steps').addEventListener('input', e => { state.steps = parseInt(e.target.value||'0')||0; });
+    $('#rooms').addEventListener('change', e => { state.rooms = parseInt(e.target.value||'1')||1; });
+    $('#address').addEventListener('input', e => { state.address = e.target.value; });
+    $('#notes').addEventListener('input', e => { state.notes = e.target.value; });
+    $('#photos').addEventListener('change', e => {
+      const files = Array.from(e.target.files||[]);
+      state.photos = files.map(f => f.name);
+      $('#photo-list').textContent = files.length ? ('Attached: ' + state.photos.join(', ')) : '';
+    });
+
+    // contact listeners
+    $('#name').addEventListener('input', e => state.name = e.target.value);
+    $('#email').addEventListener('input', e => state.email = e.target.value);
+    $('#phone').addEventListener('input', e => state.phone = e.target.value);
+    $('#date').addEventListener('change', e => state.date = e.target.value);
+
+    // ====== ESTIMATE ======
+    function calcEstimate(){
+      if(!state.projectType) return null;
+      let subtotal = 0;
+      if(state.projectType === 'stairs_refinish'){
+        const steps = Math.max(state.steps||0, 10);
+        subtotal = rates.stairs_refinish * steps;
+      } else {
+        const sqft = Math.max(state.sqft||0, 0);
+        const complexity = 1 + (Math.max(state.rooms,1)-1)*0.06;
+        subtotal = (rates[state.projectType]||0) * sqft * complexity;
+      }
+      const contingency = Math.max(150, subtotal * 0.08);
+      const low = Math.max(350, Math.round(subtotal * 0.92));
+      const high = Math.round(subtotal + contingency);
+      const cityBuffer = 95;
+      return { low: low + cityBuffer, high: high + cityBuffer };
+    }
+
+    function showEstimate(){
+      state.estimate = calcEstimate();
+      $('#range').textContent = state.estimate ? `${money(state.estimate.low)} – ${money(state.estimate.high)}` : '$— – $—';
+      toStep('contact'); // ensure we're on the contact+estimate view
+      // scroll to range
+      $('#range').scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    // ====== RESERVE (SAVE LEAD) ======
+    async function reserveLead(){
+      if(!state.estimate){ showEstimate(); return; }
+      const lead = {
+        id: 'SQZ-' + Math.random().toString(36).slice(2,7).toUpperCase(),
+        createdAt: new Date().toISOString(),
+        projectType: state.projectType,
+        sqft: state.sqft||0,
+        steps: state.steps||0,
+        rooms: state.rooms||1,
+        address: state.address||'',
+        notes: state.notes||'',
+        photos: state.photos||[],
+        name: state.name||'',
+        email: state.email||'',
+        phone: state.phone||'',
+        preferredDate: state.date||'',
+        estimate: state.estimate
+      };
+
+      // local save
+      state.leadQueue.unshift(lead);
+      localStorage.setItem('sqz_leads', JSON.stringify(state.leadQueue));
+
+      // optional webhook
+      if(WEBHOOK_URL){
+        try{
+          await fetch(WEBHOOK_URL, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(lead)
+          });
+        }catch(e){ console.warn('Webhook failed', e); }
+      }
+
+      // fill confirm
+      $('#confirm-est').textContent = `${money(lead.estimate.low)} – ${money(lead.estimate.high)}`;
+      $('#confirm-contact').textContent = `${lead.name} • ${lead.email} • ${lead.phone}`;
+      $('#confirm-address').textContent = lead.address || '—';
+
+      toStep('confirm');
+    }
+
+    // ====== ADMIN VIEW ======
+    function renderAdmin(){
+      $('#lead-count').textContent = state.leadQueue.length;
+      const box = $('#lead-list');
+      box.innerHTML = '';
+      if(!state.leadQueue.length){
+        box.innerHTML = `<div class="card muted">No leads yet — generate an estimate and click “Reserve & Request Confirmation”.</div>`;
+        return;
+      }
+      state.leadQueue.forEach(lead=>{
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <div><strong>${lead.id}</strong> • ${pretty[lead.projectType] || lead.projectType}</div>
+            <div class="badge">${new Date(lead.createdAt).toLocaleString()}</div>
+          </div>
+          <div class="grid two" style="margin-top:8px">
+            <div>
+              <div class="muted">Scope</div>
+              <div>${lead.projectType==='stairs_refinish' ? (lead.steps+' steps') : (lead.sqft+' sq.ft • '+lead.rooms+' room(s)')}</div>
+            </div>
+            <div>
+              <div class="muted">Estimate</div>
+              <div><strong>${money(lead.estimate.low)} – ${money(lead.estimate.high)}</strong></div>
+            </div>
+            <div>
+              <div class="muted">Client</div>
+              <div>${lead.name} • ${lead.email} • ${lead.phone}</div>
+            </div>
+            <div>
+              <div class="muted">Address</div>
+              <div>${lead.address || '—'}</div>
+            </div>
+          </div>
+          <div class="muted" style="margin-top:8px">${lead.notes || ''}</div>
+        `;
+        box.appendChild(el);
+      });
+    }
+
+    // ====== UTILS ======
+    function resetAll(){
+      state.projectType=''; state.sqft=0; state.rooms=3; state.steps=0; state.address=''; state.notes='';
+      state.photos=[]; state.name=''; state.email=''; state.phone=''; state.date=''; state.estimate=null;
+      // clear inputs
+      ['sqft','steps','address','notes','name','email','phone','date'].forEach(id=>{ const el = $('#'+id); if(el) el.value=''; });
+      $('#rooms').value='3'; $('#photo-list').textContent='';
+      // unselect pills
+      ['flooring_refinish','flooring_install','painting_interior','stairs_refinish'].forEach(t=>{
+        const el = document.getElementById('opt-'+t); if(el) el.classList.remove('selected');
+      });
+    }
+
+    // init
+    document.getElementById('year').textContent = new Date().getFullYear();
+    toStep('landing');
+  </script>
 </body>
 </html>
